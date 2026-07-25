@@ -14,7 +14,7 @@ st.markdown(LEDGER_CSS, unsafe_allow_html=True)
 # Sidebar: API key + data upload
 # ---------------------------------------------------------------------------
 st.sidebar.markdown(
-    "<div style='font-family:\"Playfair Display\",serif; font-size:1.4rem; font-weight:700; color:#F5EFDC;'>💰 Pocket C.A.</div>",
+    "<div style='font-family:\"Source Sans 3\",sans-serif; font-size:1.3rem; font-weight:700; color:#1B2430;'>💰 Pocket C.A.</div>",
     unsafe_allow_html=True,
 )
 st.sidebar.caption("Your pocket accounting assistant")
@@ -73,9 +73,9 @@ st.markdown(
     """
     <div class="pca-header">
       <div>
-        <div class="pca-eyebrow">General Ledger &middot; Personal Accounts</div>
+        <div class="pca-greeting">Welcome back</div>
         <div class="pca-title">Pocket C.A.</div>
-        <div class="pca-tagline">Your AI accounting assistant — every answer grounded in your real, computed numbers, never a guess.</div>
+        <div class="pca-tagline">Your AI accounting assistant — every answer grounded in your real, computed numbers.</div>
       </div>
       <div class="pca-avatar">💰</div>
     </div>
@@ -161,9 +161,9 @@ with tab_reports:
         st.markdown(
             f"""
             <div class="pca-kpi-row">
-              {kpi_card_html("💵", "rgba(15,61,46,0.10)", "Total Income", f"${summary['total_income']:,.2f}")}
-              {kpi_card_html("💳", "rgba(166,57,46,0.10)", "Total Expenses", f"${summary['total_expenses']:,.2f}")}
-              {kpi_card_html("🏦", "rgba(201,162,39,0.18)", "Net Savings", f"${summary['net_savings']:,.2f}", trend_text, trend_class)}
+              {kpi_card_html("💵", "rgba(31,58,95,0.10)", "Total Income", f"${summary['total_income']:,.2f}")}
+              {kpi_card_html("💳", "rgba(160,43,43,0.10)", "Total Expenses", f"${summary['total_expenses']:,.2f}")}
+              {kpi_card_html("🏦", "rgba(62,107,140,0.14)", "Net Savings", f"${summary['net_savings']:,.2f}", trend_text, trend_class)}
             </div>
             """,
             unsafe_allow_html=True,
@@ -202,7 +202,7 @@ with tab_reports:
         if not merch_df.empty:
             fig3 = px.bar(merch_df, x="total", y="merchant", orientation="h")
             apply_ledger_chart_theme(fig3)
-            fig3.update_traces(marker_color="#0F3D2E")
+            fig3.update_traces(marker_color="#1F3A5F")
             st.markdown('<div class="pca-chart-card">', unsafe_allow_html=True)
             st.plotly_chart(fig3, use_container_width=True, theme=None)
             st.markdown('</div>', unsafe_allow_html=True)
