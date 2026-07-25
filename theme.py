@@ -16,19 +16,19 @@ LEDGER_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #F8F7F2;
+  --bg: #F7F7FB;
   --card: #FFFFFF;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B7280;
-  --forest: #0F4C3A;
-  --emerald: #1E7A5A;
-  --gold: #D4A017;
+  --text-primary: #171523;
+  --text-secondary: #6B6F87;
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --accent: #8B5CF6;
   --success: #16A34A;
   --danger: #DC2626;
-  --border-soft: rgba(15,76,58,0.08);
-  --shadow-sm: 0 1px 2px rgba(15,23,20,0.04);
-  --shadow-md: 0 4px 16px rgba(15,23,20,0.07);
-  --shadow-lg: 0 10px 28px rgba(15,23,20,0.10);
+  --border-soft: rgba(79,70,229,0.10);
+  --shadow-sm: 0 1px 2px rgba(23,21,35,0.05);
+  --shadow-md: 0 4px 16px rgba(23,21,35,0.08);
+  --shadow-lg: 0 10px 28px rgba(23,21,35,0.12);
 }
 
 @keyframes fadeInUp {
@@ -76,7 +76,7 @@ h1, h2, h3 {
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]:hover {
-  border-color: var(--gold);
+  border-color: var(--accent);
   background-color: #FBF9F2;
 }
 
@@ -114,7 +114,7 @@ h1, h2, h3 {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--forest), var(--emerald));
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,14 +187,14 @@ h1, h2, h3 {
 }
 .stButton button {
   background: var(--card) !important;
-  color: var(--forest) !important;
+  color: var(--primary) !important;
   border: 1px solid var(--border-soft) !important;
   border-radius: 12px !important;
   box-shadow: var(--shadow-sm);
   padding: 0.5rem 1rem !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
 }
-.stButton button p, .stButton button span { color: var(--forest) !important; }
+.stButton button p, .stButton button span { color: var(--primary) !important; }
 .stButton button:hover,
 .stButton button:focus {
   transform: translateY(-1px);
@@ -209,11 +209,11 @@ h1, h2, h3 {
   color: #ffffff !important;
 }
 .stButton button[kind="primary"] {
-  background: var(--forest) !important;
+  background: var(--primary) !important;
   border: none !important;
 }
 .stButton button[kind="primary"]:hover {
-  background: var(--emerald) !important;
+  background: var(--primary-hover) !important;
 }
 
 /* ---------- Tabs ---------- */
@@ -225,10 +225,10 @@ h1, h2, h3 {
   transition: color 0.15s ease;
 }
 .stTabs [aria-selected="true"] {
-  color: var(--forest) !important;
+  color: var(--primary) !important;
 }
 .stTabs [data-baseweb="tab-highlight"] {
-  background-color: var(--forest) !important;
+  background-color: var(--primary) !important;
   transition: all 0.25s ease;
 }
 
@@ -261,7 +261,7 @@ h1, h2, h3 {
   background: var(--card);
   border-radius: 14px;
   box-shadow: var(--shadow-sm);
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--accent);
   padding: 0.9rem 1.2rem;
   font-size: 0.92rem;
   color: var(--text-secondary);
@@ -292,7 +292,7 @@ h1, h2, h3 {
 
 # Shared Plotly styling so charts match the new palette instead of default
 # Plotly colors.
-PLOTLY_COLORWAY = ["#0F4C3A", "#D4A017", "#1E7A5A", "#DC2626", "#6B7280", "#93C5AD"]
+PLOTLY_COLORWAY = ["#4F46E5", "#8B5CF6", "#22C55E", "#EF4444", "#94A3B8", "#C7D2FE"]
 
 
 def apply_ledger_chart_theme(fig):
@@ -303,8 +303,8 @@ def apply_ledger_chart_theme(fig):
     IMPORTANT: pass theme=None to st.plotly_chart() when using this, or
     Streamlit will re-apply its own theme on top and wash the colors out.
     """
-    ink = "#1A1A1A"
-    muted = "#6B7280"
+    ink = "#171523"
+    muted = "#6B6F87"
     fig.update_layout(
         colorway=PLOTLY_COLORWAY,
         paper_bgcolor="#ffffff",
