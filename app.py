@@ -168,7 +168,9 @@ with tab_reports:
             if not cat_df.empty:
                 fig = px.pie(cat_df, names="category", values="amount", hole=0.55)
                 apply_ledger_chart_theme(fig)
-                st.plotly_chart(fig, use_container_width=True)
+                st.markdown('<div class="ledger-chart-card">', unsafe_allow_html=True)
+                st.plotly_chart(fig, use_container_width=True, theme=None)
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.caption("No expense data for this period.")
 
@@ -178,7 +180,9 @@ with tab_reports:
             if not trend_df.empty:
                 fig2 = px.line(trend_df, x="month", y=["income", "expenses", "net"], markers=True)
                 apply_ledger_chart_theme(fig2)
-                st.plotly_chart(fig2, use_container_width=True)
+                st.markdown('<div class="ledger-chart-card">', unsafe_allow_html=True)
+                st.plotly_chart(fig2, use_container_width=True, theme=None)
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.caption("Not enough data for a trend.")
 
@@ -187,7 +191,9 @@ with tab_reports:
         if not merch_df.empty:
             fig3 = px.bar(merch_df, x="merchant", y="total")
             apply_ledger_chart_theme(fig3)
-            st.plotly_chart(fig3, use_container_width=True)
+            st.markdown('<div class="ledger-chart-card">', unsafe_allow_html=True)
+            st.plotly_chart(fig3, use_container_width=True, theme=None)
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.divider()
         st.markdown('<div class="ledger-section-title">AI-generated summary</div>', unsafe_allow_html=True)
