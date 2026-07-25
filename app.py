@@ -14,7 +14,7 @@ st.markdown(LEDGER_CSS, unsafe_allow_html=True)
 # Sidebar: API key + data upload
 # ---------------------------------------------------------------------------
 st.sidebar.markdown(
-    "<div style='font-family:Inter,sans-serif; font-size:1.35rem; font-weight:800; color:#1A1A1A;'>💰 Pocket C.A.</div>",
+    "<div style='font-family:Inter,sans-serif; font-size:1.35rem; font-weight:800; color:#171523;'>💰 Pocket C.A.</div>",
     unsafe_allow_html=True,
 )
 st.sidebar.caption("Your pocket accounting assistant")
@@ -161,9 +161,9 @@ with tab_reports:
         st.markdown(
             f"""
             <div class="pca-kpi-row">
-              {kpi_card_html("💵", "rgba(15,76,58,0.1)", "Total Income", f"${summary['total_income']:,.2f}")}
-              {kpi_card_html("💳", "rgba(220,38,38,0.1)", "Total Expenses", f"${summary['total_expenses']:,.2f}")}
-              {kpi_card_html("🏦", "rgba(212,160,23,0.15)", "Net Savings", f"${summary['net_savings']:,.2f}", trend_text, trend_class)}
+              {kpi_card_html("💵", "rgba(79,70,229,0.10)", "Total Income", f"${summary['total_income']:,.2f}")}
+              {kpi_card_html("💳", "rgba(220,38,38,0.10)", "Total Expenses", f"${summary['total_expenses']:,.2f}")}
+              {kpi_card_html("🏦", "rgba(139,92,246,0.15)", "Net Savings", f"${summary['net_savings']:,.2f}", trend_text, trend_class)}
             </div>
             """,
             unsafe_allow_html=True,
@@ -202,7 +202,7 @@ with tab_reports:
         if not merch_df.empty:
             fig3 = px.bar(merch_df, x="total", y="merchant", orientation="h")
             apply_ledger_chart_theme(fig3)
-            fig3.update_traces(marker_color="#0F4C3A")
+            fig3.update_traces(marker_color="#4F46E5")
             st.markdown('<div class="pca-chart-card">', unsafe_allow_html=True)
             st.plotly_chart(fig3, use_container_width=True, theme=None)
             st.markdown('</div>', unsafe_allow_html=True)
