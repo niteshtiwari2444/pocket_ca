@@ -5,13 +5,18 @@ import plotly.express as px
 
 import data_utils as du
 from assistant import ask_pocket_ca, generate_report_narrative, get_model
+from theme import LEDGER_CSS, apply_ledger_chart_theme
 
 st.set_page_config(page_title="Pocket C.A.", page_icon="💰", layout="wide")
+st.markdown(LEDGER_CSS, unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
 # Sidebar: API key + data upload
 # ---------------------------------------------------------------------------
-st.sidebar.title("💰 Pocket C.A.")
+st.sidebar.markdown(
+    "<div style='font-family:Fraunces,serif; font-size:1.5rem; font-weight:700;'>💰 Pocket C.A.</div>",
+    unsafe_allow_html=True,
+)
 st.sidebar.caption("Your pocket accounting assistant")
 
 
@@ -64,19 +69,35 @@ st.sidebar.caption(
 # ---------------------------------------------------------------------------
 # Main area: tabs
 # ---------------------------------------------------------------------------
-st.title("Pocket C.A. — your AI accounting assistant")
+st.markdown(
+    """
+    <div class="ledger-header">
+      <div class="ledger-seal">💰</div>
+      <div class="ledger-eyebrow">General Ledger · Personal Accounts</div>
+      <h1>Pocket C.A.</h1>
+      <div class="ledger-tagline">Your AI accounting assistant — every answer grounded in your real, computed numbers, never a guess.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-tab_chat, tab_reports = st.tabs(["💬 Chat", "📊 Reports"])
+tab_chat, tab_reports = st.tabs(["💬  Chat", "📊  Reports"])
 
 # ---------------------------------------------------------------------------
 # Chat tab
 # ---------------------------------------------------------------------------
 with tab_chat:
     if st.session_state.df is None:
-        st.info("Upload your transactions in the sidebar (or click **Use sample data**) to get personalized answers.")
+        st.markdown(
+            '<div class="ledger-note">Upload your transactions in the sidebar '
+            '(or click <b>Use sample data</b>) to get personalized answers.</div>',
+            unsafe_allow_html=True,
+        )
+        st.write("")
 
     for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
+        avatar = "🧾" if msg["role"] == "user" else "🪙"
+        with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
 
     example_cols = st.columns(3)
@@ -98,10 +119,10 @@ with tab_chat:
             st.error("Please enter your free Gemini API key in the sidebar first.")
         else:
             st.session_state.messages.append({"role": "user", "content": final_prompt})
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar="🧾"):
                 st.markdown(final_prompt)
 
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar="🪙"):
                 with st.spinner("Thinking..."):
                     try:
                         model = get_model(api_key)
@@ -117,7 +138,11 @@ with tab_chat:
 with tab_reports:
     df = st.session_state.df
     if df is None:
-        st.info("Upload your transactions (or use sample data) in the sidebar to generate a report.")
+        st.markdown(
+            '<div class="ledger-note">Upload your transactions (or use sample data) '
+            'in the sidebar to generate a report.</div>',
+            unsafe_allow_html=True,
+        )
     else:
         months = sorted(df["month"].unique())
         selected_month = st.selectbox("Period", options=["All time"] + months, index=0)
@@ -138,31 +163,34 @@ with tab_reports:
 
         col_a, col_b = st.columns(2)
         with col_a:
-            st.subheader("Spending by category")
+            st.markdown('<div class="ledger-section-title">Spending by category</div>', unsafe_allow_html=True)
             cat_df = pd.DataFrame(summary["top_categories"])
             if not cat_df.empty:
-                fig = px.pie(cat_df, names="category", values="amount", hole=0.4)
+                fig = px.pie(cat_df, names="category", values="amount", hole=0.55)
+                apply_ledger_chart_theme(fig)
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.caption("No expense data for this period.")
 
         with col_b:
-            st.subheader("Monthly trend")
+            st.markdown('<div class="ledger-section-title">Monthly trend</div>', unsafe_allow_html=True)
             trend_df = pd.DataFrame(trend)
             if not trend_df.empty:
                 fig2 = px.line(trend_df, x="month", y=["income", "expenses", "net"], markers=True)
+                apply_ledger_chart_theme(fig2)
                 st.plotly_chart(fig2, use_container_width=True)
             else:
                 st.caption("Not enough data for a trend.")
 
-        st.subheader("Top merchants")
+        st.markdown('<div class="ledger-section-title">Top merchants</div>', unsafe_allow_html=True)
         merch_df = pd.DataFrame(merch)
         if not merch_df.empty:
             fig3 = px.bar(merch_df, x="merchant", y="total")
+            apply_ledger_chart_theme(fig3)
             st.plotly_chart(fig3, use_container_width=True)
 
         st.divider()
-        st.subheader("AI-generated summary")
+        st.markdown('<div class="ledger-section-title">AI-generated summary</div>', unsafe_allow_html=True)
         if st.button("Generate narrative report", type="primary"):
             if not api_key:
                 st.error("Please enter your free Gemini API key in the sidebar first.")
