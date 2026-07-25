@@ -204,6 +204,15 @@ h1, h2, h3 {
   font-size: 0.92rem;
   color: var(--ink);
 }
+
+/* ---------- Chart card wrapper ---------- */
+.ledger-chart-card {
+  background: #ffffff;
+  border: 1px solid rgba(15,61,46,0.15);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem 0.2rem 0.8rem;
+  margin-bottom: 1rem;
+}
 </style>
 """
 
@@ -213,15 +222,36 @@ PLOTLY_COLORWAY = ["#0F3D2E", "#C9A227", "#A63D40", "#1B5E45", "#6B8F71", "#8C6D
 
 
 def apply_ledger_chart_theme(fig):
-    """Apply the ledger palette/fonts to a Plotly figure in place-ish (returns it)."""
+    """
+    Apply the ledger palette/fonts to a Plotly figure. Sets colors explicitly
+    on every text element (not just the global font) because Streamlit's
+    built-in Plotly theme overlay (and dark-mode) otherwise overrides unset
+    properties. IMPORTANT: pass theme=None to st.plotly_chart() when using
+    this, or Streamlit will re-apply its own theme on top and wash colors out.
+    """
+    ink = "#1C2321"
     fig.update_layout(
         colorway=PLOTLY_COLORWAY,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="IBM Plex Mono, monospace", color="#1C2321", size=12),
-        legend=dict(bgcolor="rgba(0,0,0,0)"),
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#ffffff",
+        font=dict(family="IBM Plex Mono, monospace", color=ink, size=13),
+        title=dict(font=dict(color=ink)),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=ink, size=12)),
         margin=dict(t=30, b=20, l=10, r=10),
     )
-    fig.update_xaxes(gridcolor="rgba(15,61,46,0.08)", zerolinecolor="rgba(15,61,46,0.15)")
-    fig.update_yaxes(gridcolor="rgba(15,61,46,0.08)", zerolinecolor="rgba(15,61,46,0.15)")
+    fig.update_xaxes(
+        gridcolor="rgba(15,61,46,0.10)",
+        zerolinecolor="rgba(15,61,46,0.2)",
+        tickfont=dict(color=ink),
+        title=dict(font=dict(color=ink)),
+        linecolor="rgba(15,61,46,0.2)",
+    )
+    fig.update_yaxes(
+        gridcolor="rgba(15,61,46,0.10)",
+        zerolinecolor="rgba(15,61,46,0.2)",
+        tickfont=dict(color=ink),
+        title=dict(font=dict(color=ink)),
+        linecolor="rgba(15,61,46,0.2)",
+    )
+    fig.update_traces(textfont_color="#ffffff", selector=dict(type="pie"))
     return fig
