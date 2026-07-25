@@ -136,25 +136,54 @@ h1, h2, h3 {
 }
 
 /* ---------- Buttons ---------- */
-.stButton button {
-  font-family: 'Inter', sans-serif;
-  background: var(--paper-dark);
-  border: 1px solid rgba(15,61,46,0.25) !important;
-  border-radius: 8px;
+.stButton button,
+.stButton button p,
+.stButton button span {
+  font-family: 'Inter', sans-serif !important;
   color: var(--ledger-green) !important;
-  font-weight: 500;
+}
+.stButton button {
+  background: var(--paper-dark) !important;
+  border: 1px solid rgba(15,61,46,0.25) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
 .stButton button:hover {
   border-color: var(--brass) !important;
-  background: #ffffff;
+  background: #ffffff !important;
+}
+.stButton button[kind="primary"],
+.stButton button[kind="primary"] p,
+.stButton button[kind="primary"] span {
+  color: var(--paper) !important;
 }
 .stButton button[kind="primary"] {
   background: var(--ledger-green) !important;
-  color: var(--paper) !important;
   border: none !important;
 }
 .stButton button[kind="primary"]:hover {
   background: var(--ledger-green-light) !important;
+}
+/* Sidebar's blanket text-color rule otherwise overrides button text
+   (it targets every descendant element, including the <p>/<span> inside
+   buttons, with higher priority than inherited color) — these selectors
+   are more specific so sidebar buttons stay readable. */
+[data-testid="stSidebar"] .stButton button,
+[data-testid="stSidebar"] .stButton button p,
+[data-testid="stSidebar"] .stButton button span {
+  color: var(--ledger-green) !important;
+}
+[data-testid="stSidebar"] .stButton button[kind="primary"],
+[data-testid="stSidebar"] .stButton button[kind="primary"] p,
+[data-testid="stSidebar"] .stButton button[kind="primary"] span {
+  color: var(--paper) !important;
+}
+/* Catch-all: any button in the sidebar (including the file uploader's
+   "Browse files" button, which isn't a .stButton) stays readable. */
+[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button p,
+[data-testid="stSidebar"] button span {
+  color: var(--ledger-green) !important;
 }
 
 /* ---------- Tabs ---------- */
