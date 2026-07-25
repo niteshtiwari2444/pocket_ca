@@ -24,7 +24,7 @@ from google.genai import types
 
 import data_utils as du
 
-DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
 
 SYSTEM_PROMPT = """You are Pocket C.A., a friendly and precise AI accounting assistant \
 built to help everyday users understand their personal finances and general \
