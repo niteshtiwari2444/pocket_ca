@@ -5,7 +5,7 @@ import plotly.express as px
 
 import data_utils as du
 from assistant import ask_pocket_ca, generate_report_narrative, get_model
-from theme import LEDGER_CSS, apply_ledger_chart_theme
+from theme import LEDGER_CSS, apply_ledger_chart_theme, kpi_card_html
 
 st.set_page_config(page_title="Pocket C.A.", page_icon="💰", layout="wide")
 st.markdown(LEDGER_CSS, unsafe_allow_html=True)
@@ -14,7 +14,7 @@ st.markdown(LEDGER_CSS, unsafe_allow_html=True)
 # Sidebar: API key + data upload
 # ---------------------------------------------------------------------------
 st.sidebar.markdown(
-    "<div style='font-family:Fraunces,serif; font-size:1.5rem; font-weight:700;'>💰 Pocket C.A.</div>",
+    "<div style='font-family:\"Playfair Display\",serif; font-size:1.4rem; font-weight:700; color:#F5EFDC;'>💰 Pocket C.A.</div>",
     unsafe_allow_html=True,
 )
 st.sidebar.caption("Your pocket accounting assistant")
@@ -71,11 +71,13 @@ st.sidebar.caption(
 # ---------------------------------------------------------------------------
 st.markdown(
     """
-    <div class="ledger-header">
-      <div class="ledger-seal">💰</div>
-      <div class="ledger-eyebrow">General Ledger · Personal Accounts</div>
-      <h1>Pocket C.A.</h1>
-      <div class="ledger-tagline">Your AI accounting assistant — every answer grounded in your real, computed numbers, never a guess.</div>
+    <div class="pca-header">
+      <div>
+        <div class="pca-eyebrow">General Ledger &middot; Personal Accounts</div>
+        <div class="pca-title">Pocket C.A.</div>
+        <div class="pca-tagline">Your AI accounting assistant — every answer grounded in your real, computed numbers, never a guess.</div>
+      </div>
+      <div class="pca-avatar">💰</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -89,7 +91,7 @@ tab_chat, tab_reports = st.tabs(["💬  Chat", "📊  Reports"])
 with tab_chat:
     if st.session_state.df is None:
         st.markdown(
-            '<div class="ledger-note">Upload your transactions in the sidebar '
+            '<div class="pca-note">Upload your transactions in the sidebar '
             '(or click <b>Use sample data</b>) to get personalized answers.</div>',
             unsafe_allow_html=True,
         )
@@ -139,7 +141,7 @@ with tab_reports:
     df = st.session_state.df
     if df is None:
         st.markdown(
-            '<div class="ledger-note">Upload your transactions (or use sample data) '
+            '<div class="pca-note">Upload your transactions (or use sample data) '
             'in the sidebar to generate a report.</div>',
             unsafe_allow_html=True,
         )
@@ -152,45 +154,61 @@ with tab_reports:
         trend = du.compute_trend(df).to_dict(orient="records")
         merch = du.top_merchants(df, n=6)
 
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Total Income", f"${summary['total_income']:,.2f}")
-        c2.metric("Total Expenses", f"${summary['total_expenses']:,.2f}")
-        c3.metric(
-            "Net Savings",
-            f"${summary['net_savings']:,.2f}",
-            delta=f"{summary['savings_rate_pct']}% savings rate" if summary.get("savings_rate_pct") is not None else None,
+        savings_rate = summary.get("savings_rate_pct")
+        trend_class = "positive" if (savings_rate is not None and savings_rate >= 0) else "negative"
+        trend_text = f"↑ {savings_rate}% savings rate" if savings_rate is not None else None
+
+        st.markdown(
+            f"""
+            <div class="pca-kpi-row">
+              {kpi_card_html("💵", "rgba(15,61,46,0.10)", "Total Income", f"${summary['total_income']:,.2f}")}
+              {kpi_card_html("💳", "rgba(166,57,46,0.10)", "Total Expenses", f"${summary['total_expenses']:,.2f}")}
+              {kpi_card_html("🏦", "rgba(201,162,39,0.18)", "Net Savings", f"${summary['net_savings']:,.2f}", trend_text, trend_class)}
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
         col_a, col_b = st.columns(2)
         with col_a:
-            st.markdown('<div class="ledger-section-title">Spending by category</div>', unsafe_allow_html=True)
+            st.markdown('<div class="pca-section-title">Spending by category</div>', unsafe_allow_html=True)
             cat_df = pd.DataFrame(summary["top_categories"])
             if not cat_df.empty:
-                fig = px.pie(cat_df, names="category", values="amount", hole=0.55)
+                fig = px.pie(cat_df, names="category", values="amount", hole=0.62)
                 apply_ledger_chart_theme(fig)
-                st.plotly_chart(fig, use_container_width=True)
+                st.markdown('<div class="pca-chart-card">', unsafe_allow_html=True)
+                st.plotly_chart(fig, use_container_width=True, theme=None)
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.caption("No expense data for this period.")
 
         with col_b:
-            st.markdown('<div class="ledger-section-title">Monthly trend</div>', unsafe_allow_html=True)
+            st.markdown('<div class="pca-section-title">Monthly trend</div>', unsafe_allow_html=True)
             trend_df = pd.DataFrame(trend)
             if not trend_df.empty:
-                fig2 = px.line(trend_df, x="month", y=["income", "expenses", "net"], markers=True)
+                fig2 = px.line(
+                    trend_df, x="month", y=["income", "expenses", "net"],
+                    markers=True, line_shape="spline",
+                )
                 apply_ledger_chart_theme(fig2)
-                st.plotly_chart(fig2, use_container_width=True)
+                st.markdown('<div class="pca-chart-card">', unsafe_allow_html=True)
+                st.plotly_chart(fig2, use_container_width=True, theme=None)
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.caption("Not enough data for a trend.")
 
-        st.markdown('<div class="ledger-section-title">Top merchants</div>', unsafe_allow_html=True)
-        merch_df = pd.DataFrame(merch)
+        st.markdown('<div class="pca-section-title">Top merchants</div>', unsafe_allow_html=True)
+        merch_df = pd.DataFrame(merch).sort_values("total")
         if not merch_df.empty:
-            fig3 = px.bar(merch_df, x="merchant", y="total")
+            fig3 = px.bar(merch_df, x="total", y="merchant", orientation="h")
             apply_ledger_chart_theme(fig3)
-            st.plotly_chart(fig3, use_container_width=True)
+            fig3.update_traces(marker_color="#0F3D2E")
+            st.markdown('<div class="pca-chart-card">', unsafe_allow_html=True)
+            st.plotly_chart(fig3, use_container_width=True, theme=None)
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.divider()
-        st.markdown('<div class="ledger-section-title">AI-generated summary</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pca-section-title">AI-generated summary</div>', unsafe_allow_html=True)
         if st.button("Generate narrative report", type="primary"):
             if not api_key:
                 st.error("Please enter your free Gemini API key in the sidebar first.")
