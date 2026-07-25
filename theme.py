@@ -1,271 +1,345 @@
 """
 theme.py
-Visual identity for Pocket C.A. — a "ledger / passbook" aesthetic instead of
-default Streamlit gray boxes. Grounded in the subject: deep ledger-green +
-aged paper cream + brass accents, a serif display face for headings, and a
-monospace face for numbers (like an old accounting ledger book).
+Visual identity for Pocket C.A. — clean, minimal fintech-SaaS look
+(Stripe/Linear/Mercury inspired) instead of default Streamlit gray boxes.
+
+Note on scope: this is a Streamlit app, not React. Streamlit doesn't support
+Framer Motion or component libraries like Lucide React, and it doesn't expose
+a way to build a true collapsible "drawer" sidebar or live theme toggle
+without extra plumbing. What IS fully achievable — and implemented here —
+is the visual language: color system, spacing, soft-shadow cards, rounded
+corners, hover/lift micro-animations via CSS, and matching chart styling.
 """
 
 LEDGER_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --paper: #F6F1E4;
-  --paper-dark: #EDE6D3;
-  --ink: #1C2321;
-  --ledger-green: #0F3D2E;
-  --ledger-green-light: #1B5E45;
-  --brass: #C9A227;
-  --debit-red: #A63D40;
-  --credit-green: #2E7D52;
+  --bg: #F8F7F2;
+  --card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B7280;
+  --forest: #0F4C3A;
+  --emerald: #1E7A5A;
+  --gold: #D4A017;
+  --success: #16A34A;
+  --danger: #DC2626;
+  --border-soft: rgba(15,76,58,0.08);
+  --shadow-sm: 0 1px 2px rgba(15,23,20,0.04);
+  --shadow-md: 0 4px 16px rgba(15,23,20,0.07);
+  --shadow-lg: 0 10px 28px rgba(15,23,20,0.10);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .stApp {
-  background-color: var(--paper);
+  background-color: var(--bg);
 }
 
 /* ---------- Typography ---------- */
 html, body, [class*="css"] {
   font-family: 'Inter', sans-serif;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 h1, h2, h3 {
-  font-family: 'Fraunces', serif !important;
-  color: var(--ledger-green) !important;
-  letter-spacing: -0.01em;
+  font-family: 'Inter', sans-serif !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
 }
 
-/* ---------- Sidebar ---------- */
+/* ---------- Sidebar: light, minimal, soft shadow instead of hard border ---------- */
 [data-testid="stSidebar"] {
-  background-color: var(--ledger-green);
+  background-color: var(--card);
+  box-shadow: 2px 0 12px rgba(15,23,20,0.05);
+  border-right: none;
 }
 [data-testid="stSidebar"] * {
-  color: var(--paper) !important;
-}
-[data-testid="stSidebar"] input,
-[data-testid="stSidebar"] textarea {
-  color: var(--ink) !important;
+  color: var(--text-primary) !important;
 }
 [data-testid="stSidebar"] hr {
-  border-color: rgba(246,241,228,0.2) !important;
+  border-color: var(--border-soft) !important;
+  margin: 1.2rem 0;
 }
 [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
-  background-color: rgba(246,241,228,0.06);
-  border: 1px dashed rgba(201,162,39,0.5);
+  background-color: var(--bg);
+  border: 1.5px dashed rgba(15,76,58,0.25);
+  border-radius: 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]:hover {
+  border-color: var(--gold);
+  background-color: #FBF9F2;
 }
 
-/* ---------- Ledger header banner ---------- */
-.ledger-header {
-  background: linear-gradient(135deg, var(--ledger-green) 0%, var(--ledger-green-light) 100%);
-  border-radius: 14px;
-  padding: 2.2rem 2.6rem;
-  margin-bottom: 1.6rem;
-  position: relative;
-  overflow: hidden;
+/* ---------- Compact header card ---------- */
+.pca-header {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  padding: 1.6rem 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeInUp 0.4s ease-out;
 }
-.ledger-header::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    transparent, transparent 27px, rgba(201,162,39,0.09) 28px
-  );
-  pointer-events: none;
+.pca-greeting {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.2rem;
 }
-.ledger-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.72rem;
-  color: var(--brass);
-  margin-bottom: 0.5rem;
-  position: relative;
-}
-.ledger-header h1 {
-  color: var(--paper) !important;
-  font-family: 'Fraunces', serif !important;
-  font-size: 2.7rem;
-  font-weight: 700;
+.pca-title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
   margin: 0;
-  position: relative;
 }
-.ledger-tagline {
-  font-family: 'Inter', sans-serif;
-  color: rgba(246,241,228,0.75);
-  margin-top: 0.6rem;
-  font-size: 0.98rem;
-  max-width: 44rem;
-  position: relative;
+.pca-tagline {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin-top: 0.3rem;
 }
-.ledger-seal {
-  position: absolute;
-  top: 1.4rem;
-  right: 1.8rem;
-  width: 62px;
-  height: 62px;
-  border: 2px solid var(--brass);
+.pca-avatar {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest), var(--emerald));
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(-8deg);
-  font-size: 1.7rem;
-  background: rgba(201,162,39,0.08);
+  font-size: 1.4rem;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
-/* ---------- Metric cards ---------- */
-[data-testid="stMetric"] {
-  background: var(--paper-dark) !important;
-  border: 1px solid rgba(15,61,46,0.15);
-  border-top: 3px solid var(--brass);
+/* ---------- KPI cards (custom, replaces st.metric for full control) ---------- */
+.pca-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+}
+.pca-kpi-card {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  padding: 1.4rem 1.5rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: fadeInUp 0.45s ease-out;
+}
+.pca-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.pca-kpi-icon {
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  padding: 1rem 1.2rem 0.9rem 1.2rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-bottom: 0.7rem;
 }
-[data-testid="stMetricValue"] {
-  font-family: 'IBM Plex Mono', monospace !important;
-  color: var(--ledger-green) !important;
-  font-weight: 600 !important;
-}
-[data-testid="stMetricLabel"] {
-  font-family: 'IBM Plex Mono', monospace !important;
+.pca-kpi-label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.72rem !important;
-  opacity: 0.7;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
 }
+.pca-kpi-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.pca-kpi-trend {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  margin-top: 0.5rem;
+}
+.pca-kpi-trend.positive { background: rgba(22,163,74,0.1); color: var(--success); }
+.pca-kpi-trend.negative { background: rgba(220,38,38,0.1); color: var(--danger); }
+.pca-kpi-trend.neutral  { background: rgba(107,114,128,0.1); color: var(--text-secondary); }
 
 /* ---------- Buttons ---------- */
 .stButton button,
 .stButton button p,
 .stButton button span {
   font-family: 'Inter', sans-serif !important;
-  color: var(--ledger-green) !important;
+  font-weight: 600 !important;
 }
 .stButton button {
-  background: var(--paper-dark) !important;
-  border: 1px solid rgba(15,61,46,0.3) !important;
-  border-radius: 8px !important;
-  font-weight: 500 !important;
+  background: var(--card) !important;
+  color: var(--forest) !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-sm);
+  padding: 0.5rem 1rem !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
 }
+.stButton button p, .stButton button span { color: var(--forest) !important; }
 .stButton button:hover,
-.stButton button:focus,
-.stButton button:active {
-  border-color: var(--brass) !important;
-  background: var(--paper) !important;
-  color: var(--ledger-green) !important;
+.stButton button:focus {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: #FBFAF6 !important;
+  border-color: rgba(15,76,58,0.18) !important;
 }
+.stButton button:active { transform: translateY(0); }
 .stButton button[kind="primary"],
 .stButton button[kind="primary"] p,
 .stButton button[kind="primary"] span {
-  color: var(--paper) !important;
+  color: #ffffff !important;
 }
 .stButton button[kind="primary"] {
-  background: var(--ledger-green) !important;
+  background: var(--forest) !important;
   border: none !important;
 }
-.stButton button[kind="primary"]:hover,
-.stButton button[kind="primary"]:focus,
-.stButton button[kind="primary"]:active {
-  background: var(--ledger-green-light) !important;
-  color: var(--paper) !important;
+.stButton button[kind="primary"]:hover {
+  background: var(--emerald) !important;
 }
 
 /* ---------- Tabs ---------- */
 .stTabs [data-baseweb="tab"] {
-  font-family: 'IBM Plex Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.78rem;
-  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
 }
 .stTabs [aria-selected="true"] {
-  color: var(--ledger-green) !important;
-  font-weight: 600;
+  color: var(--forest) !important;
 }
 .stTabs [data-baseweb="tab-highlight"] {
-  background-color: var(--brass) !important;
+  background-color: var(--forest) !important;
+  transition: all 0.25s ease;
 }
 
 /* ---------- Chat ---------- */
 [data-testid="stChatMessage"] {
-  border-radius: 10px;
-  border: 1px solid rgba(15,61,46,0.12);
-  background: #ffffff;
+  border-radius: 16px;
+  border: none;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  animation: fadeInUp 0.25s ease-out;
+}
+[data-testid="stChatInput"] {
+  border-radius: 14px;
 }
 [data-testid="stChatInput"] textarea {
   font-family: 'Inter', sans-serif;
 }
 
-/* ---------- Section headers (ledger-style rule) ---------- */
-.ledger-section-title {
-  font-family: 'Fraunces', serif;
-  color: var(--ledger-green);
-  font-size: 1.3rem;
-  font-weight: 600;
-  border-bottom: 2px solid var(--brass);
-  padding-bottom: 0.3rem;
-  margin: 1.4rem 0 0.9rem 0;
-  display: inline-block;
+/* ---------- Section titles ---------- */
+.pca-section-title {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1.2rem 0 0.8rem 0;
 }
 
-/* ---------- Ledger callout (empty states / info) ---------- */
-.ledger-note {
-  background: var(--paper-dark);
-  border-left: 3px solid var(--brass);
-  border-radius: 6px;
-  padding: 0.9rem 1.1rem;
+/* ---------- Empty-state / info callout ---------- */
+.pca-note {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  border-left: 3px solid var(--gold);
+  padding: 0.9rem 1.2rem;
   font-size: 0.92rem;
-  color: var(--ink);
+  color: var(--text-secondary);
+  animation: fadeIn 0.3s ease-out;
 }
 
 /* ---------- Chart card wrapper ---------- */
-.ledger-chart-card {
-  background: #ffffff;
-  border: 1px solid rgba(15,61,46,0.15);
-  border-radius: 10px;
-  padding: 0.6rem 0.8rem 0.2rem 0.8rem;
-  margin-bottom: 1rem;
+.pca-chart-card {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.2rem 0.4rem 1.2rem;
+  margin-bottom: 1.2rem;
+  transition: box-shadow 0.2s ease;
+}
+.pca-chart-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- Misc widget polish ---------- */
+[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-soft) !important;
 }
 </style>
 """
 
-# Shared Plotly styling so charts match the ledger palette instead of default
+# Shared Plotly styling so charts match the new palette instead of default
 # Plotly colors.
-PLOTLY_COLORWAY = ["#0F3D2E", "#C9A227", "#A63D40", "#1B5E45", "#6B8F71", "#8C6D1F"]
+PLOTLY_COLORWAY = ["#0F4C3A", "#D4A017", "#1E7A5A", "#DC2626", "#6B7280", "#93C5AD"]
 
 
 def apply_ledger_chart_theme(fig):
     """
-    Apply the ledger palette/fonts to a Plotly figure. Sets colors explicitly
-    on every text element (not just the global font) because Streamlit's
-    built-in Plotly theme overlay otherwise overrides unset properties.
+    Apply the Pocket C.A. palette/fonts to a Plotly figure. Sets colors
+    explicitly on every text element because Streamlit's built-in Plotly
+    theme overlay otherwise overrides unset properties.
     IMPORTANT: pass theme=None to st.plotly_chart() when using this, or
     Streamlit will re-apply its own theme on top and wash the colors out.
     """
-    ink = "#1C2321"
+    ink = "#1A1A1A"
+    muted = "#6B7280"
     fig.update_layout(
         colorway=PLOTLY_COLORWAY,
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
-        font=dict(family="IBM Plex Mono, monospace", color=ink, size=13),
+        font=dict(family="Inter, sans-serif", color=ink, size=13),
         title=dict(font=dict(color=ink)),
-        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=ink, size=12)),
-        margin=dict(t=30, b=20, l=10, r=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=muted, size=12)),
+        margin=dict(t=25, b=20, l=10, r=10),
     )
     fig.update_xaxes(
-        gridcolor="rgba(15,61,46,0.10)",
-        zerolinecolor="rgba(15,61,46,0.2)",
-        tickfont=dict(color=ink),
-        title=dict(font=dict(color=ink)),
-        linecolor="rgba(15,61,46,0.2)",
+        gridcolor="rgba(15,23,20,0.06)",
+        zerolinecolor="rgba(15,23,20,0.12)",
+        tickfont=dict(color=muted),
+        title=dict(font=dict(color=muted)),
+        linecolor="rgba(15,23,20,0.12)",
     )
     fig.update_yaxes(
-        gridcolor="rgba(15,61,46,0.10)",
-        zerolinecolor="rgba(15,61,46,0.2)",
-        tickfont=dict(color=ink),
-        title=dict(font=dict(color=ink)),
-        linecolor="rgba(15,61,46,0.2)",
+        gridcolor="rgba(15,23,20,0.06)",
+        zerolinecolor="rgba(15,23,20,0.12)",
+        tickfont=dict(color=muted),
+        title=dict(font=dict(color=muted)),
+        linecolor="rgba(15,23,20,0.12)",
     )
     fig.update_traces(textfont_color="#ffffff", selector=dict(type="pie"))
     return fig
+
+
+def kpi_card_html(icon: str, icon_bg: str, label: str, value: str, trend_text: str = None, trend_class: str = "neutral") -> str:
+    """Build one custom KPI card as HTML (used instead of st.metric for full styling control)."""
+    trend_html = f'<div class="pca-kpi-trend {trend_class}">{trend_text}</div>' if trend_text else ""
+    return f"""
+    <div class="pca-kpi-card">
+      <div class="pca-kpi-icon" style="background:{icon_bg};">{icon}</div>
+      <div class="pca-kpi-label">{label}</div>
+      <div class="pca-kpi-value">{value}</div>
+      {trend_html}
+    </div>
+    """
