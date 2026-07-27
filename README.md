@@ -76,36 +76,6 @@ Get a **free** Gemini API key (no billing required) at https://aistudio.google.c
 
 ---
 
-## 🚀 Deploy to Streamlit Community Cloud (Free)
-
-### 1. Push this project to GitHub
-```bash
-git init
-git add .
-git commit -m "Pocket C.A.: AI accounting assistant with grounded chat and reports"
-git branch -M main
-git remote add origin https://github.com/niteshtiwari2444/pocket_ca.git
-git push -u origin main
-```
-
-### 2. Deploy
-1. Go to https://share.streamlit.io and sign in with GitHub.
-2. Click **Create app** → **From existing repo**.
-3. Select your repo, branch `main`, main file `app.py`.
-4. Click **Deploy**.
-
-### 3. Add your API key as a secret
-So visitors don't need their own key, go to **App settings → Secrets** and add:
-```toml
-GEMINI_API_KEY = "your_key_here"
-GEMINI_MODEL = "gemini-3.5-flash"
-```
-
-### 4. Share the link
-You'll get a public URL like `https://pocketca-xxxxx.streamlit.app`.
-
----
-
 ## 🧠 How It Works
 
 1. **Data loading** – Uploaded CSV/XLSX is parsed in `data_utils.py`; missing categories are auto-assigned via keyword matching, and dates are bucketed into months.
